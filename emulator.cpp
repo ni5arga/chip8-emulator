@@ -334,7 +334,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(window);
@@ -368,7 +368,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    std::cout << "CHIP-8 Emulator" << std::endl;
+    std::cout << "CHIP-8 Emulator with SDL" << std::endl;
     std::cout << "Controls (CHIP-8 keypad mapped to keyboard):" << std::endl;
     std::cout << "  1 2 3 4      maps to    1 2 3 C" << std::endl;
     std::cout << "  Q W E R                 4 5 6 D" << std::endl;
@@ -381,9 +381,10 @@ int main(int argc, char* argv[]) {
     uint32_t pixels[SCREEN_WIDTH * SCREEN_HEIGHT];
     
     const int cyclesPerFrame = 10;
-    Uint32 lastTime = SDL_GetTicks();
     const int targetFPS = 60;
-    const int frameDelay = 1000 / targetFPS;
+    const Uint32 frameDelay = 1000 / targetFPS;
+    Uint32 lastTimerUpdate = SDL_GetTicks();
+    int timerAccumulator = 0;
     
     while (running) {
         Uint32 frameStart = SDL_GetTicks();
@@ -419,12 +420,13 @@ int main(int argc, char* argv[]) {
         
         SDL_UpdateTexture(texture, nullptr, pixels, SCREEN_WIDTH * sizeof(uint32_t));
         
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
         SDL_RenderPresent(renderer);
         
         Uint32 frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime) {
+        if (frameTime < frameDelay) {
             SDL_Delay(frameDelay - frameTime);
         }
     }
@@ -435,6 +437,6 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
     
     std::cout << "Emulator stopped." << std::endl;
-     s
+    
     return 0;
 }

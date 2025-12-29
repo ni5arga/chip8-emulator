@@ -1,0 +1,13 @@
+# Compiled files
+*.o
+*.exe
+chip8
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
